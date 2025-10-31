@@ -102,12 +102,12 @@ const Index = () => {
       <section 
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
         style={{
-          backgroundImage: `linear-gradient(135deg, rgba(155, 135, 245, 0.1) 0%, rgba(255, 222, 226, 0.2) 100%), url('https://cdn.poehali.dev/projects/ecf5c9ad-237f-4500-8e42-7e2898e88ad8/files/4e709c7f-29e9-4843-b101-d33696b3b222.jpg')`,
+          backgroundImage: `linear-gradient(135deg, rgba(155, 135, 245, 0.15) 0%, rgba(255, 222, 226, 0.25) 50%, rgba(229, 222, 255, 0.2) 100%), url('https://cdn.poehali.dev/projects/ecf5c9ad-237f-4500-8e42-7e2898e88ad8/files/1794de75-795f-4e07-830f-58779a84f688.jpg')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center'
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/50 to-background"></div>
         
         <div className="container relative z-10 px-4 py-20">
           <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
