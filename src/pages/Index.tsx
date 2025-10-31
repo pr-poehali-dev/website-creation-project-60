@@ -130,7 +130,11 @@ const Index = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-              <Button size="lg" className="text-lg px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105">
+              <Button 
+                size="lg" 
+                className="text-lg px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105"
+                onClick={() => window.open('https://t.me/SSNik', '_blank')}
+              >
                 <Icon name="Calendar" className="mr-2" size={20} />
                 Записаться на консультацию
               </Button>
