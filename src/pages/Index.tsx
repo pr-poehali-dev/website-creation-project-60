@@ -112,7 +112,7 @@ const Index = () => {
         <div className="container relative z-10 px-4 py-20">
           <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
             <Badge className="mx-auto text-lg px-6 py-2 bg-primary/10 text-primary border-primary/20">
-              ✨ Премиум услуги красоты и здоровья
+              ✨ Бесконтактная косметология Светланы Соковиковой
             </Badge>
             
             <h1 className="text-5xl md:text-7xl font-bold leading-tight">
