@@ -3,381 +3,370 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+  category: string;
+  rating: number;
+  reviews: number;
+  inStock: boolean;
+}
+
+interface CartItem extends Product {
+  quantity: number;
+}
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState('rejuvenation');
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
-  const services = {
-    rejuvenation: [
-      {
-        title: 'Биоревитализация',
-        description: 'Глубокое увлажнение и восстановление кожи на клеточном уровне',
-        icon: 'Sparkles',
-        price: 'от 8 000 ₽'
-      },
-      {
-        title: 'Контурная пластика',
-        description: 'Коррекция овала лица и восстановление объёмов',
-        icon: 'Heart',
-        price: 'от 15 000 ₽'
-      },
-      {
-        title: 'Ботулинотерапия',
-        description: 'Разглаживание мимических морщин и профилактика старения',
-        icon: 'Zap',
-        price: 'от 5 000 ₽'
+  const products: Product[] = [
+    {
+      id: 1,
+      name: 'Беспроводные наушники Premium',
+      price: 12990,
+      image: 'https://cdn.poehali.dev/projects/ecf5c9ad-237f-4500-8e42-7e2898e88ad8/files/0cb1f684-a6c5-420e-a0dc-d5539c754f47.jpg',
+      category: 'audio',
+      rating: 4.8,
+      reviews: 124,
+      inStock: true
+    },
+    {
+      id: 2,
+      name: 'Умные часы Pro Max',
+      price: 24990,
+      image: 'https://cdn.poehali.dev/projects/ecf5c9ad-237f-4500-8e42-7e2898e88ad8/files/100c3153-0768-4a37-9a89-0685d4699ed5.jpg',
+      category: 'wearables',
+      rating: 4.9,
+      reviews: 89,
+      inStock: true
+    },
+    {
+      id: 3,
+      name: 'Ноутбук Ultra Slim',
+      price: 89990,
+      image: 'https://cdn.poehali.dev/projects/ecf5c9ad-237f-4500-8e42-7e2898e88ad8/files/d2defdb9-2c10-4a45-9c8a-86b144477acb.jpg',
+      category: 'computers',
+      rating: 5.0,
+      reviews: 56,
+      inStock: true
+    },
+    {
+      id: 4,
+      name: 'Портативная колонка Bass',
+      price: 5990,
+      image: 'https://cdn.poehali.dev/projects/ecf5c9ad-237f-4500-8e42-7e2898e88ad8/files/0cb1f684-a6c5-420e-a0dc-d5539c754f47.jpg',
+      category: 'audio',
+      rating: 4.6,
+      reviews: 203,
+      inStock: true
+    },
+    {
+      id: 5,
+      name: 'Фитнес-браслет Active',
+      price: 3990,
+      image: 'https://cdn.poehali.dev/projects/ecf5c9ad-237f-4500-8e42-7e2898e88ad8/files/100c3153-0768-4a37-9a89-0685d4699ed5.jpg',
+      category: 'wearables',
+      rating: 4.7,
+      reviews: 167,
+      inStock: true
+    },
+    {
+      id: 6,
+      name: 'Планшет Drawing Pro',
+      price: 45990,
+      image: 'https://cdn.poehali.dev/projects/ecf5c9ad-237f-4500-8e42-7e2898e88ad8/files/d2defdb9-2c10-4a45-9c8a-86b144477acb.jpg',
+      category: 'computers',
+      rating: 4.9,
+      reviews: 78,
+      inStock: true
+    }
+  ];
+
+  const categories = [
+    { id: 'all', name: 'Все товары', icon: 'Grid3x3' },
+    { id: 'audio', name: 'Аудио', icon: 'Headphones' },
+    { id: 'wearables', name: 'Носимые устройства', icon: 'Watch' },
+    { id: 'computers', name: 'Компьютеры', icon: 'Laptop' }
+  ];
+
+  const filteredProducts = selectedCategory === 'all' 
+    ? products 
+    : products.filter(p => p.category === selectedCategory);
+
+  const addToCart = (product: Product) => {
+    setCart(prevCart => {
+      const existingItem = prevCart.find(item => item.id === product.id);
+      if (existingItem) {
+        return prevCart.map(item =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
       }
-    ],
-    wellness: [
-      {
-        title: 'Детокс-программы',
-        description: 'Комплексное очищение организма и восстановление энергии',
-        icon: 'Leaf',
-        price: 'от 12 000 ₽'
-      },
-      {
-        title: 'Массажные практики',
-        description: 'Расслабление, снятие стресса и улучшение самочувствия',
-        icon: 'HandHeart',
-        price: 'от 4 000 ₽'
-      },
-      {
-        title: 'Витаминотерапия',
-        description: 'Повышение иммунитета и жизненного тонуса',
-        icon: 'Pill',
-        price: 'от 3 500 ₽'
-      }
-    ]
+      return [...prevCart, { ...product, quantity: 1 }];
+    });
   };
 
-  const beforeAfter = [
-    {
-      title: 'Биоревитализация',
-      description: 'Результат после курса процедур',
-      duration: '3 месяца',
-      image: 'https://cdn.poehali.dev/projects/ecf5c9ad-237f-4500-8e42-7e2898e88ad8/files/d16c83eb-fa43-4f34-b05a-2272045672a6.jpg'
-    },
-    {
-      title: 'Контурная пластика',
-      description: 'Моделирование овала лица',
-      duration: '1 процедура',
-      image: 'https://cdn.poehali.dev/projects/ecf5c9ad-237f-4500-8e42-7e2898e88ad8/files/d16c83eb-fa43-4f34-b05a-2272045672a6.jpg'
-    },
-    {
-      title: 'Комплексная программа',
-      description: 'Омоложение + оздоровление',
-      duration: '6 месяцев',
-      image: 'https://cdn.poehali.dev/projects/ecf5c9ad-237f-4500-8e42-7e2898e88ad8/files/d16c83eb-fa43-4f34-b05a-2272045672a6.jpg'
-    }
-  ];
+  const removeFromCart = (productId: number) => {
+    setCart(prevCart => prevCart.filter(item => item.id !== productId));
+  };
 
-  const testimonials = [
-    {
-      name: 'Елена М.',
-      age: 42,
-      rating: 5,
-      text: 'Невероятный результат! После курса биоревитализации кожа стала упругой и сияющей. Все знакомые спрашивают, что я сделала!',
-      service: 'Биоревитализация'
-    },
-    {
-      name: 'Анна К.',
-      age: 38,
-      rating: 5,
-      text: 'Профессиональный подход и внимательное отношение. Результат превзошёл все ожидания. Рекомендую всем!',
-      service: 'Контурная пластика'
-    },
-    {
-      name: 'Мария С.',
-      age: 45,
-      rating: 5,
-      text: 'Проходила комплексную программу оздоровления. Чувствую себя на 10 лет моложе! Энергия бьёт ключом.',
-      service: 'Детокс-программа'
+  const updateQuantity = (productId: number, quantity: number) => {
+    if (quantity === 0) {
+      removeFromCart(productId);
+      return;
     }
-  ];
+    setCart(prevCart =>
+      prevCart.map(item =>
+        item.id === productId ? { ...item, quantity } : item
+      )
+    );
+  };
 
-  const currentServices = activeTab === 'rejuvenation' ? services.rejuvenation : services.wellness;
+  const cartTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const cartItemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div className="min-h-screen">
-      <section 
-        className="relative min-h-screen flex items-center justify-center overflow-hidden"
-        style={{
-          backgroundImage: `linear-gradient(135deg, rgba(155, 135, 245, 0.15) 0%, rgba(255, 222, 226, 0.25) 50%, rgba(229, 222, 255, 0.2) 100%), url('https://cdn.poehali.dev/projects/ecf5c9ad-237f-4500-8e42-7e2898e88ad8/files/1794de75-795f-4e07-830f-58779a84f688.jpg')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/50 to-background"></div>
-        
-        <div className="container relative z-10 px-4 py-20">
-          <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
-            <Badge className="mx-auto text-lg px-6 py-2 bg-primary/10 text-primary border-primary/20">
-              ✨ БЕЗконтактная косметология Светланы Соковиковой
-            </Badge>
-            
-            <h1 className="text-5xl md:text-7xl font-bold leading-tight">
-              <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
-                Верните молодость
-              </span>
-              <br />
-              <span className="text-foreground">
-                и жизненную энергию
-              </span>
-            </h1>
-            
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto">
-              Инновационные методики омоложения и оздоровления для вашей красоты и благополучия
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-              <Button 
-                size="lg" 
-                className="text-lg px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105"
-                onClick={() => window.open('https://t.me/SSNik', '_blank')}
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b shadow-sm">
+        <div className="container px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+                <Icon name="ShoppingBag" className="text-white" size={24} />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold">TechStore</h1>
+                <p className="text-xs text-muted-foreground">Электроника премиум-класса</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div className="hidden md:flex items-center gap-2 bg-muted px-4 py-2 rounded-full">
+                <Icon name="Search" size={18} className="text-muted-foreground" />
+                <Input 
+                  type="text" 
+                  placeholder="Поиск товаров..." 
+                  className="border-0 bg-transparent w-64 focus-visible:ring-0"
+                />
+              </div>
+
+              <Button
+                variant="outline"
+                size="icon"
+                className="relative rounded-full"
+                onClick={() => setIsCartOpen(!isCartOpen)}
               >
-                <Icon name="Calendar" className="mr-2" size={20} />
-                Записаться на консультацию
+                <Icon name="ShoppingCart" size={20} />
+                {cartItemsCount > 0 && (
+                  <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                    {cartItemsCount}
+                  </Badge>
+                )}
               </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8 py-6 rounded-full border-2">
-                <Icon name="Play" className="mr-2" size={20} />
-                Смотреть результаты
-              </Button>
-            </div>
-
-            <div className="grid grid-cols-3 gap-8 pt-12 max-w-2xl mx-auto">
-              <div className="text-center animate-slide-up" style={{ animationDelay: '0.1s' }}>
-                <div className="text-4xl font-bold text-primary">500+</div>
-                <div className="text-sm text-muted-foreground mt-2">Довольных клиентов</div>
-              </div>
-              <div className="text-center animate-slide-up" style={{ animationDelay: '0.2s' }}>
-                <div className="text-4xl font-bold text-primary">15+</div>
-                <div className="text-sm text-muted-foreground mt-2">Лет опыта</div>
-              </div>
-              <div className="text-center animate-slide-up" style={{ animationDelay: '0.3s' }}>
-                <div className="text-4xl font-bold text-primary">98%</div>
-                <div className="text-sm text-muted-foreground mt-2">Рекомендуют нас</div>
-              </div>
             </div>
           </div>
         </div>
+      </header>
 
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <Icon name="ChevronDown" size={32} className="text-primary" />
-        </div>
-      </section>
-
-      <section className="py-20 bg-gradient-to-b from-background to-accent/20">
-        <div className="container px-4">
-          <div className="text-center mb-16 animate-fade-in">
-            <Badge className="mb-4 text-base px-4 py-1">Наши услуги</Badge>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Выберите свой путь к
-              <span className="text-primary"> совершенству</span>
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Индивидуальный подход и проверенные методики для достижения ваших целей
-            </p>
+      <main className="container px-4 py-8">
+        <section className="mb-12">
+          <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 p-12 md:p-16">
+            <div className="relative z-10 max-w-2xl">
+              <Badge className="mb-4">🎉 Новая коллекция</Badge>
+              <h2 className="text-4xl md:text-5xl font-bold mb-4">
+                Премиум электроника
+                <br />
+                <span className="text-primary">для вашей жизни</span>
+              </h2>
+              <p className="text-xl text-muted-foreground mb-6">
+                Откройте мир инноваций с нашими продуктами высочайшего качества
+              </p>
+              <Button size="lg" className="rounded-full px-8">
+                <Icon name="TrendingUp" className="mr-2" size={20} />
+                Смотреть новинки
+              </Button>
+            </div>
           </div>
+        </section>
 
-          <div className="flex justify-center gap-4 mb-12">
-            <Button
-              size="lg"
-              variant={activeTab === 'rejuvenation' ? 'default' : 'outline'}
-              onClick={() => setActiveTab('rejuvenation')}
-              className="rounded-full px-8"
-            >
-              <Icon name="Sparkles" className="mr-2" size={20} />
-              Омоложение
-            </Button>
-            <Button
-              size="lg"
-              variant={activeTab === 'wellness' ? 'default' : 'outline'}
-              onClick={() => setActiveTab('wellness')}
-              className="rounded-full px-8"
-            >
-              <Icon name="Heart" className="mr-2" size={20} />
-              Оздоровление
-            </Button>
+        <section className="mb-8">
+          <div className="flex gap-3 overflow-x-auto pb-4">
+            {categories.map(category => (
+              <Button
+                key={category.id}
+                variant={selectedCategory === category.id ? 'default' : 'outline'}
+                onClick={() => setSelectedCategory(category.id)}
+                className="rounded-full whitespace-nowrap"
+              >
+                <Icon name={category.icon} className="mr-2" size={18} />
+                {category.name}
+              </Button>
+            ))}
           </div>
+        </section>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {currentServices.map((service, index) => (
-              <Card 
-                key={index} 
-                className="group hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-2 hover:border-primary/50 rounded-3xl overflow-hidden animate-scale-in"
+        <section>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProducts.map((product, index) => (
+              <Card
+                key={product.id}
+                className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 rounded-2xl overflow-hidden border-2 hover:border-primary/50 animate-scale-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <CardContent className="p-8">
-                  <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <Icon name={service.icon} className="text-primary" size={32} />
+                <div className="relative h-64 bg-gradient-to-br from-muted to-muted/50 overflow-hidden">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  {product.inStock && (
+                    <Badge className="absolute top-4 left-4 bg-green-500">
+                      В наличии
+                    </Badge>
+                  )}
+                </div>
+
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="flex items-center gap-1">
+                      <Icon name="Star" className="text-yellow-400 fill-yellow-400" size={16} />
+                      <span className="text-sm font-medium">{product.rating}</span>
+                    </div>
+                    <span className="text-sm text-muted-foreground">
+                      ({product.reviews} отзывов)
+                    </span>
                   </div>
-                  
-                  <h3 className="text-2xl font-bold mb-3">{service.title}</h3>
-                  <p className="text-muted-foreground mb-6 leading-relaxed">
-                    {service.description}
-                  </p>
-                  
-                  <div className="flex items-center justify-between pt-4 border-t">
-                    <span className="text-2xl font-bold text-primary">{service.price}</span>
-                    <Button variant="ghost" className="group-hover:text-primary">
-                      Подробнее
-                      <Icon name="ArrowRight" className="ml-2 group-hover:translate-x-1 transition-transform" size={16} />
+
+                  <h3 className="text-lg font-bold mb-3 line-clamp-2">{product.name}</h3>
+
+                  <div className="flex items-center justify-between mt-4">
+                    <div>
+                      <div className="text-2xl font-bold text-primary">
+                        {product.price.toLocaleString('ru-RU')} ₽
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() => addToCart(product)}
+                      className="rounded-full"
+                    >
+                      <Icon name="ShoppingCart" className="mr-2" size={18} />
+                      В корзину
                     </Button>
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
-      <section className="py-20 bg-gradient-to-b from-accent/20 to-background">
-        <div className="container px-4">
-          <div className="text-center mb-16 animate-fade-in">
-            <Badge className="mb-4 text-base px-4 py-1">Результаты</Badge>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Фото <span className="text-primary">до и после</span>
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Реальные результаты наших клиентов говорят сами за себя
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {beforeAfter.map((item, index) => (
-              <Card 
-                key={index} 
-                className="group overflow-hidden rounded-3xl hover:shadow-2xl transition-all duration-300 border-2 hover:border-primary/50 animate-scale-in"
-                style={{ animationDelay: `${index * 0.15}s` }}
-              >
-                <div className="relative h-64 overflow-hidden">
-                  <img 
-                    src={item.image} 
-                    alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute top-4 right-4">
-                    <Badge className="bg-primary text-white">
-                      <Icon name="Clock" className="mr-1" size={14} />
-                      {item.duration}
-                    </Badge>
-                  </div>
-                </div>
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold mb-2">{item.title}</h3>
-                  <p className="text-muted-foreground">{item.description}</p>
-                  <Button variant="ghost" className="mt-4 w-full group-hover:text-primary">
-                    Увеличить фото
-                    <Icon name="Expand" className="ml-2" size={16} />
+      {isCartOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50" onClick={() => setIsCartOpen(false)}>
+          <div
+            className="absolute right-0 top-0 h-full w-full max-w-md bg-background shadow-2xl animate-slide-in-right"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex flex-col h-full">
+              <div className="p-6 border-b">
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="text-2xl font-bold">Корзина</h2>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsCartOpen(false)}
+                  >
+                    <Icon name="X" size={24} />
                   </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {cartItemsCount} {cartItemsCount === 1 ? 'товар' : 'товаров'}
+                </p>
+              </div>
 
-      <section className="py-20 bg-gradient-to-b from-background to-secondary/10">
-        <div className="container px-4">
-          <div className="text-center mb-16 animate-fade-in">
-            <Badge className="mb-4 text-base px-4 py-1">Отзывы</Badge>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Что говорят наши <span className="text-primary">клиенты</span>
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Доверие и благодарность — наша главная награда
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {testimonials.map((testimonial, index) => (
-              <Card 
-                key={index} 
-                className="relative rounded-3xl border-2 hover:border-primary/50 hover:shadow-xl transition-all duration-300 animate-scale-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <CardContent className="p-8">
-                  <div className="flex items-center gap-1 mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Icon key={i} name="Star" className="text-yellow-400 fill-yellow-400" size={20} />
+              <div className="flex-1 overflow-y-auto p-6">
+                {cart.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-full text-center">
+                    <Icon name="ShoppingCart" size={64} className="text-muted-foreground mb-4" />
+                    <h3 className="text-xl font-semibold mb-2">Корзина пуста</h3>
+                    <p className="text-muted-foreground">Добавьте товары для оформления заказа</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {cart.map(item => (
+                      <Card key={item.id}>
+                        <CardContent className="p-4">
+                          <div className="flex gap-4">
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-20 h-20 object-cover rounded-lg"
+                            />
+                            <div className="flex-1">
+                              <h4 className="font-semibold mb-1 line-clamp-2">{item.name}</h4>
+                              <p className="text-lg font-bold text-primary mb-2">
+                                {item.price.toLocaleString('ru-RU')} ₽
+                              </p>
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  size="icon"
+                                  variant="outline"
+                                  className="h-8 w-8"
+                                  onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                >
+                                  <Icon name="Minus" size={14} />
+                                </Button>
+                                <span className="w-8 text-center font-semibold">{item.quantity}</span>
+                                <Button
+                                  size="icon"
+                                  variant="outline"
+                                  className="h-8 w-8"
+                                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                >
+                                  <Icon name="Plus" size={14} />
+                                </Button>
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="h-8 w-8 ml-auto"
+                                  onClick={() => removeFromCart(item.id)}
+                                >
+                                  <Icon name="Trash2" size={14} />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
                     ))}
                   </div>
-                  
-                  <p className="text-muted-foreground mb-6 leading-relaxed italic">
-                    "{testimonial.text}"
-                  </p>
-                  
-                  <div className="pt-4 border-t">
-                    <div className="font-bold text-lg">{testimonial.name}</div>
-                    <div className="text-sm text-muted-foreground">{testimonial.age} года</div>
-                    <Badge variant="secondary" className="mt-2">
-                      {testimonial.service}
-                    </Badge>
+                )}
+              </div>
+
+              {cart.length > 0 && (
+                <div className="p-6 border-t bg-muted/30">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-lg font-semibold">Итого:</span>
+                    <span className="text-2xl font-bold text-primary">
+                      {cartTotal.toLocaleString('ru-RU')} ₽
+                    </span>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-20 bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10">
-        <div className="container px-4">
-          <Card className="max-w-4xl mx-auto rounded-3xl border-2 shadow-2xl overflow-hidden">
-            <CardContent className="p-12 text-center">
-              <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-                <Icon name="Calendar" className="text-primary" size={40} />
-              </div>
-              
-              <h2 className="text-4xl font-bold mb-4">
-                Готовы начать преображение?
-              </h2>
-              <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Запишитесь на бесплатную консультацию и получите индивидуальный план процедур
-              </p>
-              
-              <Button size="lg" className="text-lg px-12 py-6 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105">
-                <Icon name="Phone" className="mr-2" size={20} />
-                Записаться сейчас
-              </Button>
-              
-              <div className="mt-8 flex items-center justify-center gap-8 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <Icon name="Shield" size={16} />
-                  Лицензированная клиника
+                  <Button size="lg" className="w-full rounded-full">
+                    <Icon name="CreditCard" className="mr-2" size={20} />
+                    Оформить заказ
+                  </Button>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Icon name="Award" size={16} />
-                  Сертифицированные специалисты
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      <footer className="bg-foreground/5 py-12">
-        <div className="container px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="text-center md:text-left">
-              <div className="text-2xl font-bold mb-2">Клиника красоты</div>
-              <p className="text-sm text-muted-foreground">© 2024 Все права защищены</p>
-            </div>
-            
-            <div className="flex gap-4">
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Icon name="Instagram" size={20} />
-              </Button>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Icon name="Facebook" size={20} />
-              </Button>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Icon name="Phone" size={20} />
-              </Button>
+              )}
             </div>
           </div>
         </div>
-      </footer>
+      )}
     </div>
   );
 };
